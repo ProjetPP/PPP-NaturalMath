@@ -16,6 +16,7 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('integrate x', 'Integrate(x, x)')
         self.assertTranslates('integrate of x', 'Integrate(x, x)')
         self.assertTranslates('integrate x from y to z', 'Integrate(x, x, y, z)')
+        self.assertTranslates('integral of x', 'Integrate(x, x)')
     def testSumBase(self):
         self.assertParses('sum i', Sum(Variable('i'), 'i'))
         self.assertTranslates('sum i', 'Sum(i, i)')

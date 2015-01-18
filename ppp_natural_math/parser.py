@@ -4,6 +4,7 @@ reserved = {
     'sum': 'SUM',
     'product': 'PRODUCT',
     'integrate': 'INTEGRATE',
+    'integral': 'INTEGRATE',
     'from': 'FROM',
     'to': 'TO',
     'of': 'OF',
