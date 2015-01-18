@@ -277,10 +277,10 @@ def p_expression_call2(t):
 # Sum
 def p_sum_base(t):
     '''sum : SUM expression'''
-    t[0] = Sum(t[2])
+    t[0] = Sum(t[2], from_=Number(1), to=Variable('Infinity'))
 def p_sum_base2(t):
     '''sum : SUM OF expression'''
-    t[0] = Sum(t[3])
+    t[0] = Sum(t[3], from_=Number(1), to=Variable('Infinity'))
 # TODO: Shift/reduce conflict
 def p_expression_sum(t):
     '''expression : sum'''
@@ -293,10 +293,10 @@ def p_expression_sum_fromto(t):
 # Product
 def p_product_base(t):
     '''product : PRODUCT expression'''
-    t[0] = Product(t[2])
+    t[0] = Product(t[2], from_=Number(1), to=Variable('Infinity'))
 def p_product_base2(t):
     '''product : PRODUCT OF expression'''
-    t[0] = Product(t[3])
+    t[0] = Product(t[3], from_=Number(1), to=Variable('Infinity'))
 # TODO: Shift/reduce conflict
 def p_expression_product(t):
     '''expression : product'''
