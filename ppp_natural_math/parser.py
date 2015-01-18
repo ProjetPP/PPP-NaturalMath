@@ -81,6 +81,36 @@ class Variable:
     def output(self):
         return self.name
 
+class Call:
+    def __init__(self, function, argument):
+        if not isinstance(function, str):
+            raise ValueError('%r is not a string.' % (function,))
+        self._function = function
+        self._argument = argument
+
+    @property
+    def function(self):
+        return self._function
+    @property
+    def argument(self):
+        return self._argument
+
+    def free_vars(self):
+        return self._argument.free_vars()
+
+    def __eq__(self, other):
+        if not isinstance(other, Call):
+            return False
+        return (self.function, self.argument) == \
+                (other.function, other.argument)
+    def __hash__(self):
+        return hash((self.function, self.argument))
+    def __repr__(self):
+        return 'Variable(%r, %r)' % (self.function, self.argument)
+
+    def output(self):
+        return '%s(%s)' % (self.function, self.argument.output())
+
 class Infix:
     def __init__(self, left, op, right):
         self._left = left
@@ -212,6 +242,9 @@ def p_expression_number(t):
 def p_expression_infix(t):
     '''expression : expression INFIX expression'''
     t[0] = Infix(t[1], t[2], t[3])
+def p_expression_call(t):
+    '''expression : NAME LEFT_PAREN expression RIGHT_PAREN'''
+    t[0] = Call(t[1], t[3])
 def p_fromto(t):
     '''fromto : FROM expression TO expression'''
     t[0] = (t[2], t[4])

@@ -27,6 +27,7 @@ class ParserTestCase(unittest.TestCase):
     def testProductBase(self):
         self.assertParses('product i', Product(Variable('i'), 'i'))
         self.assertTranslates('product i', 'Product(i, i)')
+        self.assertTranslates('product g(i)', 'Product(g(i), i)')
         self.assertTranslates('product of i', 'Product(i, i)')
         self.assertTranslates('product i from y to z', 'Product(i, i, y, z)')
         self.assertTranslates('product j from y to z', 'Product(j, j, y, z)')
@@ -34,3 +35,4 @@ class ParserTestCase(unittest.TestCase):
     def testSumIntegrate(self):
         self.assertTranslates('integrate sum i*x', 'Integrate(Sum(i*x, i), x)')
         self.assertTranslates('sum integrate i*x', 'Sum(Integrate(i*x, x), i)')
+        self.assertTranslates('sum integrate i*f(x)', 'Sum(Integrate(i*f(x), x), i)')
