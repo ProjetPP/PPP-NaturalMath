@@ -1,3 +1,4 @@
+from collections import namedtuple
 from ply import lex, yacc
 
 reserved = {
@@ -68,78 +69,30 @@ def guess_variable(expression, hint):
     raise CannotGuessVariable(expression, hint)
 
 
-class Variable:
-    def __init__(self, name):
-        if not isinstance(name, str):
-            raise ValueError('%r is not a string.' % (name,))
-        self._name = name
-
-    @property
-    def name(self):
-        return self._name
-
+class Variable(namedtuple('_Variable', 'name')):
     def free_vars(self):
         return {self.name}
 
-    def __eq__(self, other):
-        if not isinstance(other, Variable):
-            return False
-        return self.name == other.name
-    def __hash__(self):
-        return hash(self.name)
     def __repr__(self):
         return 'Variable(%r)' % self.name
 
     def output(self):
         return self.name
 
-class Paren:
-    def __init__(self, expr):
-        self._expr = expr
-
-    @property
-    def expr(self):
-        return self._expr
-
+class Paren(namedtuple('_Paren', 'expr')):
     def free_vars(self):
         return self.expr.free_vars()
 
-    def __eq__(self, other):
-        if not isinstance(other, Paren):
-            return False
-        return self.expr == other.expr
-    def __hash__(self):
-        return hash(self.expr)
     def __repr__(self):
         return 'Paren(%r)' % self.expr
 
     def output(self):
         return '(%s)' % self.expr.output()
 
-class Call:
-    def __init__(self, function, arguments):
-        if not isinstance(function, str):
-            raise ValueError('%r is not a string.' % (function,))
-        self._function = function
-        self._arguments = arguments
-
-    @property
-    def function(self):
-        return self._function
-    @property
-    def arguments(self):
-        return self._arguments
-
+class Call(namedtuple('_Call', 'function arguments')):
     def free_vars(self):
-        return set.union(*[x.free_vars() for x in self._arguments])
+        return set.union(*[x.free_vars() for x in self.arguments])
 
-    def __eq__(self, other):
-        if not isinstance(other, Call):
-            return False
-        return (self.function, self.arguments) == \
-                (other.function, other.arguments)
-    def __hash__(self):
-        return hash((self.function, self.arguments))
     def __repr__(self):
         return 'Variable(%r, %r)' % (self.function, self.arguments)
 
@@ -147,26 +100,10 @@ class Call:
         return '%s(%s)' % (self.function,
                 ', '.join(x.output() for x in self.arguments))
 
-class Postfix:
-    def __init__(self, left, op):
-        self._left = left
-        self._op = op
-
-    @property
-    def left(self):
-        return self._left
-    @property
-    def op(self):
-        return self._op
-
+class Postfix(namedtuple('_Postfix', 'left op')):
     def free_vars(self):
         return self.left.free_vars()
 
-    def __eq__(self, other):
-        return (self.left, self.op) == \
-                (other.left, other.op)
-    def __hash__(self):
-        return hash((self.left, self.op))
     def __repr__(self):
         return 'Infix(%r, %r)' % \
                 (self.left, self.op)
@@ -174,30 +111,10 @@ class Postfix:
     def output(self):
         return '%s%s' % (self.left.output(), self.op)
 
-class Infix:
-    def __init__(self, left, op, right):
-        self._left = left
-        self._op = op
-        self._right = right
-
-    @property
-    def left(self):
-        return self._left
-    @property
-    def op(self):
-        return self._op
-    @property
-    def right(self):
-        return self._right
-
+class Infix(namedtuple('_Infix', 'left op right')):
     def free_vars(self):
         return self.left.free_vars() | self.right.free_vars()
 
-    def __eq__(self, other):
-        return (self.left, self.op, self.right) == \
-                (other.left, other.op, other.right)
-    def __hash__(self):
-        return hash((self.left, self.op, self.right))
     def __repr__(self):
         return 'Infix(%r, %r, %r)' % \
                 (self.left, self.op, self.right)
@@ -205,24 +122,9 @@ class Infix:
     def output(self):
         return '%s%s%s' % (self.left.output(), self.op, self.right.output())
 
-class Number:
-    def __init__(self, value):
-        self._value = value
-
-    @property
-    def value(self):
-        return self._value
-
+class Number(namedtuple('_Number', 'value')):
     def free_vars(self):
         return set()
-
-    def __eq__(self, other):
-        if not isinstance(other, Number):
-            return False
-        return self.value == other.value
-
-    def __hash__(self):
-        return hash(self.value)
 
     def __repr__(self):
         return 'Number(%r)' % self.value
