@@ -1,0 +1,13 @@
+*~
+*.swp
+*.swo
+*.dot
+*.ps
+__pycache__
+build/
+dist/
+*.egg-info/
+.coverage
+htmlcov
+parser.out
+parsetab.py
