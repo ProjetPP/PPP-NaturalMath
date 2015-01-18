@@ -1,3 +1,5 @@
+import operator
+import functools
 from ply import lex, yacc
 
 reserved = {
@@ -24,6 +26,7 @@ tokens = (
     'NATURAL',
     'NUMBER',
     'UNDERSCORE',
+    'COMMA',
     )
 
 t_LEFT_PAREN = r'\('
@@ -36,6 +39,7 @@ t_NATURAL = r'[1-9][0-9]*'
 t_NUMBER = r'-?([0-9]*[.,])?[0-9]+'
 t_INFIX = r'[-+*/^]'
 t_UNDERSCORE = r'_'
+t_COMMA = r','
 
 t_ignore = r' '
 
@@ -83,34 +87,37 @@ class Variable:
         return self.name
 
 class Call:
-    def __init__(self, function, argument):
+    def __init__(self, function, arguments):
         if not isinstance(function, str):
             raise ValueError('%r is not a string.' % (function,))
         self._function = function
-        self._argument = argument
+        self._arguments = arguments
 
     @property
     def function(self):
         return self._function
     @property
-    def argument(self):
-        return self._argument
+    def arguments(self):
+        return self._arguments
 
     def free_vars(self):
-        return self._argument.free_vars()
+        return functools.reduce(operator.or_,
+                map(lambda x:x.free_vars(), self._arguments),
+                set())
 
     def __eq__(self, other):
         if not isinstance(other, Call):
             return False
-        return (self.function, self.argument) == \
-                (other.function, other.argument)
+        return (self.function, self.arguments) == \
+                (other.function, other.arguments)
     def __hash__(self):
-        return hash((self.function, self.argument))
+        return hash((self.function, self.arguments))
     def __repr__(self):
-        return 'Variable(%r, %r)' % (self.function, self.argument)
+        return 'Variable(%r, %r)' % (self.function, self.arguments)
 
     def output(self):
-        return '%s(%s)' % (self.function, self.argument.output())
+        return '%s(%s)' % (self.function,
+                ', '.join(x.output() for x in self.arguments))
 
 class Infix:
     def __init__(self, left, op, right):
@@ -249,12 +256,18 @@ def p_fromto(t):
 
 ###################################################
 # Functions
-def p_expression_call(t):
-    '''expression : NAME LEFT_PAREN expression RIGHT_PAREN'''
-    t[0] = Call(t[1], t[3])
+def p_call_begin(t):
+    '''call : NAME LEFT_PAREN expression'''
+    t[0] = Call(t[1], [t[3]])
+def p_call_continue(t):
+    '''call : call COMMA expression'''
+    t[0] = Call(t[1].function, t[1].arguments + [t[3]])
+def p_call_end(t):
+    '''expression : call RIGHT_PAREN'''
+    t[0] = t[1]
 def p_expression_call2(t):
     '''expression : NAME OF expression'''
-    t[0] = Call(t[1], t[3])
+    t[0] = Call(t[1], [t[3]])
 
 ###################################################
 # Sum

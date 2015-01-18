@@ -13,12 +13,15 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('x', 'x')
     def testFunctionCall(self):
         self.assertTranslates('sin of pi', 'sin(pi)')
+        self.assertTranslates('f(x,y)', 'f(x, y)')
     def testIntegrateBase(self):
         self.assertParses('integrate x', Integrate(Variable('x'), 'x'))
         self.assertTranslates('integrate x', 'Integrate(x, x)')
         self.assertTranslates('integrate of x', 'Integrate(x, x)')
         self.assertTranslates('integrate x from y to z', 'Integrate(x, x, y, z)')
         self.assertTranslates('integral of x', 'Integrate(x, x)')
+        self.assertTranslates('integral of f(x, y)', 'Integrate(f(x, y), y)')
+        self.assertTranslates('integral of integral of f(x, y)', 'Integrate(Integrate(f(x, y), y), x)')
     def testSumBase(self):
         self.assertParses('sum i', Sum(Variable('i'), 'i'))
         self.assertTranslates('sum i', 'Sum(i, i)')
