@@ -5,6 +5,10 @@ reserved = {
     'product': 'PRODUCT',
     'integrate': 'INTEGRATE',
     'integral': 'INTEGRATE',
+    'derivate': 'DERIVATE',
+    'derivative': 'DERIVATE',
+    'differentiate': 'DERIVATE',
+    'differential': 'DERIVATE',
     'from': 'FROM',
     'to': 'TO',
     'of': 'OF',
@@ -14,6 +18,7 @@ tokens = (
     'SUM',
     'PRODUCT',
     'INTEGRATE',
+    'DERIVATE',
     'FROM',
     'TO',
     'OF',
@@ -225,6 +230,40 @@ class Sum(TwoBounds):
 class Product(TwoBounds):
     _variable_hint = 'lkji'
 
+class Derivate:
+    _variable_hint = 'tzyx'
+    def __init__(self, expr, var=None):
+        self._expr = expr
+        self._var = var or guess_variable(expr, self._variable_hint)
+        if not isinstance(self.var, str):
+            raise ValueError('%r is not a string' % self.var)
+
+    @property
+    def expr(self):
+        return self._expr
+    @property
+    def var(self):
+        return self._var
+
+    def free_vars(self):
+        return self.expr.free_vars() - {self.var}
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return (self.expr, self.var) == \
+                (other.expr, other.var)
+
+    def __hash__(self):
+        return hash((other.expr, other.var))
+
+    def __repr__(self):
+        return '%s(%r, %r, %r, %r)' % (self.__class__.__name__,
+                self.expr, self.var)
+
+    def output(self):
+        return 'diff(%s, %s)' % (self.expr.output(), self.var)
+
 
 ###################################################
 # Variables
@@ -312,6 +351,18 @@ def p_expression_integrate(t):
 def p_expression_integrate_fromto(t):
     '''expression : integrate fromto'''
     t[0] = Integrate(t[1].expr, var=t[1].var, from_=t[2][0], to=t[2][1])
+
+###################################################
+# Derivate
+def p_derivate_base(t):
+    '''derivate : DERIVATE expression'''
+    t[0] = Derivate(t[2])
+def p_derivate_base2(t):
+    '''derivate : DERIVATE OF expression'''
+    t[0] = Derivate(t[3])
+def p_expression_derivate(t):
+    '''expression : derivate'''
+    t[0] = t[1]
 
 
 def p_error(t):

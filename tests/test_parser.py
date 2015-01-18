@@ -22,6 +22,13 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('integral of x', 'Integrate(x, x)')
         self.assertTranslates('integral of f(x, y)', 'Integrate(f(x, y), y)')
         self.assertTranslates('integral of integral of f(x, y)', 'Integrate(Integrate(f(x, y), y), x)')
+    def testDerivateBase(self):
+        self.assertParses('derivate x', Derivate(Variable('x'), 'x'))
+        self.assertTranslates('derivate x', 'diff(x, x)')
+        self.assertTranslates('derivate of x', 'diff(x, x)')
+        self.assertTranslates('derivative of x', 'diff(x, x)')
+        self.assertTranslates('derivative of f(x, y)', 'diff(f(x, y), y)')
+        self.assertTranslates('derivative of derivative of f(x, y)', 'diff(diff(f(x, y), y), x)')
     def testSumBase(self):
         self.assertParses('sum i', Sum(Variable('i'), 'i'))
         self.assertTranslates('sum i', 'Sum(i, i)')
