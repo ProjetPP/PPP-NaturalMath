@@ -1,5 +1,3 @@
-import operator
-import functools
 from ply import lex, yacc
 
 reserved = {
@@ -101,9 +99,7 @@ class Call:
         return self._arguments
 
     def free_vars(self):
-        return functools.reduce(operator.or_,
-                map(lambda x:x.free_vars(), self._arguments),
-                set())
+        return set.union(*[x.free_vars() for x in self._arguments])
 
     def __eq__(self, other):
         if not isinstance(other, Call):
