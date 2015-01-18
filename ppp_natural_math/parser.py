@@ -208,6 +208,9 @@ class TwoBounds:
         if not isinstance(self.var, str):
             raise ValueError('%r is not a string' % self.var)
 
+    def add_fromto(self, from_, to):
+        return self.__class__(self.expr, self.var, from_=from_, to=to)
+
     @property
     def expr(self):
         return self._expr
@@ -344,7 +347,7 @@ def p_expression_sum(t):
     t[0] = t[1]
 def p_expression_sum_fromto(t):
     '''expression : sum fromto'''
-    t[0] = Sum(t[1].expr, var=t[1].var, from_=t[2][0], to=t[2][1])
+    t[0] = t[1].add_fromto(*t[2])
 
 ###################################################
 # Product
@@ -360,7 +363,7 @@ def p_expression_product(t):
     t[0] = t[1]
 def p_expression_product_fromto(t):
     '''expression : product fromto'''
-    t[0] = Product(t[1].expr, var=t[1].var, from_=t[2][0], to=t[2][1])
+    t[0] = t[1].add_fromto(*t[2])
 
 ###################################################
 # Integrate
@@ -376,7 +379,7 @@ def p_expression_integrate(t):
     t[0] = t[1]
 def p_expression_integrate_fromto(t):
     '''expression : integrate fromto'''
-    t[0] = Integrate(t[1].expr, var=t[1].var, from_=t[2][0], to=t[2][1])
+    t[0] = t[1].add_fromto(*t[2])
 
 ###################################################
 # Derivate
