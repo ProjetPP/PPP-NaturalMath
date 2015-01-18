@@ -58,6 +58,8 @@ class CannotGuessVariable(ParserException):
 
 def guess_variable(expression, hint):
     free_vars = expression.free_vars()
+    if len(free_vars) == 1:
+        return list(free_vars)[0]
     for name in hint:
         if name in free_vars:
             return name
@@ -252,9 +254,9 @@ class TwoBounds:
 class Integrate(TwoBounds):
     _variable_hint = 'wvutzyx'
 class Sum(TwoBounds):
-    _variable_hint = 'lkji'
+    _variable_hint = 'lkjimn'
 class Product(TwoBounds):
-    _variable_hint = 'lkji'
+    _variable_hint = 'lkjimn'
 
 class Derivate:
     _variable_hint = 'tzyx'

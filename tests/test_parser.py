@@ -40,6 +40,7 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('sum of i', 'Sum(i, i)')
         self.assertTranslates('sum i from y to z', 'Sum(i, i, y, z)')
         self.assertTranslates('sum j from y to z', 'Sum(j, j, y, z)')
+        self.assertTranslates('sum bla from y to z', 'Sum(bla, bla, y, z)')
     def testMultipleSums(self):
         self.assertTranslates('sum sum i^j', 'Sum(Sum(i^j, j), i)')
     def testProductBase(self):
