@@ -23,6 +23,7 @@ tokens = (
     'TO',
     'OF',
     'INFIX',
+    'POSTFIX',
     'LEFT_PAREN',
     'RIGHT_PAREN',
     'NAME',
@@ -40,6 +41,7 @@ def t_NAME(t):
     return t
 t_NATURAL = r'[1-9][0-9]*'
 t_NUMBER = r'-?([0-9]*[.,])?[0-9]+'
+t_POSTFIX = r'[!]'
 t_INFIX = r'[-+*/^]'
 t_UNDERSCORE = r'_'
 t_COMMA = r','
@@ -144,6 +146,33 @@ class Call:
     def output(self):
         return '%s(%s)' % (self.function,
                 ', '.join(x.output() for x in self.arguments))
+
+class Postfix:
+    def __init__(self, left, op):
+        self._left = left
+        self._op = op
+
+    @property
+    def left(self):
+        return self._left
+    @property
+    def op(self):
+        return self._op
+
+    def free_vars(self):
+        return self.left.free_vars()
+
+    def __eq__(self, other):
+        return (self.left, self.op) == \
+                (other.left, other.op)
+    def __hash__(self):
+        return hash((self.left, self.op))
+    def __repr__(self):
+        return 'Infix(%r, %r)' % \
+                (self.left, self.op)
+
+    def output(self):
+        return '%s%s' % (self.left.output(), self.op)
 
 class Infix:
     def __init__(self, left, op, right):
@@ -310,6 +339,13 @@ def p_expression_variable(t):
 def p_expression_number(t):
     '''expression : NUMBER'''
     t[0] = Number(float(t[1]))
+def p_expression_postfix_base(t):
+    '''expression : NUMBER POSTFIX
+                  | variable POSTFIX'''
+    t[0] = Postfix(t[1], t[2])
+def p_expression_postfix_paren(t):
+    '''expression : LEFT_PAREN expression RIGHT_PAREN POSTFIX'''
+    t[0] = Postfix(Paren(t[2]), t[4])
 def p_expression_infix(t):
     '''expression : expression INFIX expression'''
     t[0] = Infix(t[1], t[2], t[3])

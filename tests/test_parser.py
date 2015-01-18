@@ -16,6 +16,8 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('x*y+z', 'x*y+z')
         self.assertTranslates('x*(y+z)', 'x*(y+z)')
         self.assertTranslates('x*(integral y+z)', 'x*(Integrate(y+z, z))')
+        self.assertTranslates('(n)!', '(n)!')
+        self.assertTranslates('n!', 'n!')
     def testFunctionCall(self):
         self.assertTranslates('sin of pi', 'sin(pi)')
         self.assertTranslates('f(x,y)', 'f(x, y)')
@@ -55,3 +57,6 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('integrate sum i*x', 'Integrate(Sum(i*x, i), x)')
         self.assertTranslates('sum integrate i*x', 'Sum(Integrate(i*x, x), i)')
         self.assertTranslates('sum integrate i*f(x)', 'Sum(Integrate(i*f(x), x), i)')
+
+    def testFactorial(self):
+        self.assertTranslates('integrate sum x*i!', 'Integrate(Sum(x*i!, i), x)')
