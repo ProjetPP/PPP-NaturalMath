@@ -11,6 +11,11 @@ class ParserTestCase(unittest.TestCase):
     def testVariableBase(self):
         self.assertParses('x', Variable('x'))
         self.assertTranslates('x', 'x')
+    def testOperatorsBase(self):
+        self.assertTranslates('x*y', 'x*y')
+        self.assertTranslates('x*y+z', 'x*y+z')
+        self.assertTranslates('x*(y+z)', 'x*(y+z)')
+        self.assertTranslates('x*(integral y+z)', 'x*(Integrate(y+z, z))')
     def testFunctionCall(self):
         self.assertTranslates('sin of pi', 'sin(pi)')
         self.assertTranslates('f(x,y)', 'f(x, y)')

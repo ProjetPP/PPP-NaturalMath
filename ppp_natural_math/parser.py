@@ -89,6 +89,29 @@ class Variable:
     def output(self):
         return self.name
 
+class Paren:
+    def __init__(self, expr):
+        self._expr = expr
+
+    @property
+    def expr(self):
+        return self._expr
+
+    def free_vars(self):
+        return self.expr.free_vars()
+
+    def __eq__(self, other):
+        if not isinstance(other, Paren):
+            return False
+        return self.expr == other.expr
+    def __hash__(self):
+        return hash(self.expr)
+    def __repr__(self):
+        return 'Paren(%r)' % self.expr
+
+    def output(self):
+        return '(%s)' % self.expr.output()
+
 class Call:
     def __init__(self, function, arguments):
         if not isinstance(function, str):
@@ -285,6 +308,9 @@ def p_expression_number(t):
 def p_expression_infix(t):
     '''expression : expression INFIX expression'''
     t[0] = Infix(t[1], t[2], t[3])
+def p_expression_paren(t):
+    '''expression : LEFT_PAREN expression RIGHT_PAREN'''
+    t[0] = Paren(t[2])
 def p_fromto(t):
     '''fromto : FROM expression TO expression'''
     t[0] = (t[2], t[4])
