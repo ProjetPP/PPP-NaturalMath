@@ -341,10 +341,10 @@ def p_error(t):
         raise ParserException("Syntax error at '%s' (%s)" % 
                 (t.value, t.type))
 
-parser = yacc.yacc(start='expression')
+parser = yacc.yacc(start='expression', debug=0, write_tables=0)
 
 def build_tree(s):
-    return parser.parse(s)
+    return parser.parse(s, lexer=lexer)
 
 def translate(s):
     return build_tree(s).output()
