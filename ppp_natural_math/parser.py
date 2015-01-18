@@ -243,12 +243,18 @@ def p_expression_number(t):
 def p_expression_infix(t):
     '''expression : expression INFIX expression'''
     t[0] = Infix(t[1], t[2], t[3])
-def p_expression_call(t):
-    '''expression : NAME LEFT_PAREN expression RIGHT_PAREN'''
-    t[0] = Call(t[1], t[3])
 def p_fromto(t):
     '''fromto : FROM expression TO expression'''
     t[0] = (t[2], t[4])
+
+###################################################
+# Functions
+def p_expression_call(t):
+    '''expression : NAME LEFT_PAREN expression RIGHT_PAREN'''
+    t[0] = Call(t[1], t[3])
+def p_expression_call2(t):
+    '''expression : NAME OF expression'''
+    t[0] = Call(t[1], t[3])
 
 ###################################################
 # Sum
