@@ -65,3 +65,20 @@ class ParserTestCase(unittest.TestCase):
 
     def testFactorial(self):
         self.assertTranslates('integrate sum x*i!', 'Integrate(Sum(x*i!, i, 1, Infinity), x)')
+
+    def testLimitBase(self):
+        self.assertTranslates('limit 1/x', 'Limit(1/x, x, Infinity)')
+        self.assertTranslates('right limit 1/x', 'RLimit(1/x, x, Infinity)')
+        self.assertTranslates('left limit 1/x', 'LLimit(1/x, x, Infinity)')
+        self.assertTranslates('limit of 1/x', 'Limit(1/x, x, Infinity)')
+        self.assertTranslates('right limit of 1/x', 'RLimit(1/x, x, Infinity)')
+        self.assertTranslates('left limit of 1/x', 'LLimit(1/x, x, Infinity)')
+        self.assertTranslates('limit of 1/x at 0', 'Limit(1/x, x, 0)')
+        self.assertTranslates('right limit of 1/x at 0', 'RLimit(1/x, x, 0)')
+        self.assertTranslates('left limit of 1/x at 0', 'LLimit(1/x, x, 0)')
+
+    def testLimitApproach(self):
+        self.assertTranslates('limit of y/x at 0', 'Limit(y/x, y, 0)')
+        self.assertTranslates('limit of y/x when x approaches 0', 'Limit(y/x, x, 0)')
+        self.assertTranslates('right limit of y/x when x approaches 0', 'RLimit(y/x, x, 0)')
+        self.assertTranslates('left limit of y/x when x approaches 0', 'LLimit(y/x, x, 0)')

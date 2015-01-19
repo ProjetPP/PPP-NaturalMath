@@ -21,6 +21,13 @@ reserved = {
     'from': 'FROM',
     'to': 'TO',
     'of': 'OF',
+    'left': 'LEFT',
+    'right': 'RIGHT',
+    'limit': 'LIMIT',
+    'lim': 'LIMIT',
+    'at': 'AT',
+    'when': 'WHEN',
+    'approaches': 'APPROACHES',
     }
 
 tokens = (
@@ -40,6 +47,12 @@ tokens = (
     'NUMBER',
     'UNDERSCORE',
     'COMMA',
+    'RIGHT',
+    'LEFT',
+    'LIMIT',
+    'AT',
+    'WHEN',
+    'APPROACHES',
     )
 
 t_LEFT_PAREN = r'\('
@@ -231,6 +244,25 @@ class Derivate:
     def output(self):
         return 'diff(%s, %s)' % (self.expr.output(), self.var)
 
+class Limit(namedtuple('_Limit', 'expression variable point')):
+    def free_vars(self):
+        # XXX Maybe add point?
+        return self.expression.free_vars() - {self.variable}
+
+    def __repr__(self):
+        return '%s(%r, %r, %r)' % (self.__class__.__name__,
+                self.expression, self.variable, self.point)
+
+    def output(self):
+        return '%s(%s, %s, %s)' % (self.__class__.__name__,
+                self.expression.output(),
+                self.variable, self.point.output())
+class RLimit(Limit):
+    pass
+class LLimit(Limit):
+    pass
+
+
 
 ###################################################
 # Variables
@@ -349,6 +381,38 @@ def p_derivate_base2(t):
 def p_expression_derivate(t):
     '''expression : derivate'''
     t[0] = t[1]
+
+
+###################################################
+# Limit
+def p_expression_limit(t):
+    '''expression : limit'''
+    t[0] = t[1]
+def p_expression_right_limit(t):
+    '''expression : RIGHT limit'''
+    t[0] = RLimit(*t[2])
+def p_expression_left_limit(t):
+    '''expression : LEFT limit'''
+    t[0] = LLimit(*t[2])
+def p_unboundedlimit_base(t):
+    '''unboundedlimit : LIMIT expression'''
+    t[0] = Limit(t[2], guess_variable(t[2], 'tzyxlkjimn'),
+            Variable('Infinity'))
+def p_unboundedlimit_base2(t):
+    '''unboundedlimit : LIMIT OF expression'''
+    t[0] = Limit(t[3], guess_variable(t[3], 'tzyxlkjimn'),
+            Variable('Infinity'))
+def p_limit_base(t):
+    '''limit : unboundedlimit'''
+    t[0] = t[1]
+def p_limit_at(t):
+    '''limit : unboundedlimit AT expression'''
+    t[0] = Limit(t[1].expression, t[1].variable, t[3])
+def p_limit_approache_at(t):
+    '''limit : unboundedlimit WHEN variable APPROACHES expression'''
+    t[0] = Limit(t[1].expression, t[3].name, t[5])
+
+
 
 
 def p_error(t):
