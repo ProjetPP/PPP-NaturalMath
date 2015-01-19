@@ -28,6 +28,15 @@ reserved = {
     'at': 'AT',
     'when': 'WHEN',
     'approaches': 'APPROACHES',
+    'approx': 'APPROX',
+    'approximate': 'APPROX',
+    'approximates': 'APPROX',
+    'approximation': 'APPROX',
+    'eval': 'APPROX',
+    'evaluate': 'APPROX',
+    'evaluates': 'APPROX',
+    'numeric': 'APPROX',
+    'numerics': 'APPROX',
     }
 
 tokens = (
@@ -53,6 +62,7 @@ tokens = (
     'AT',
     'WHEN',
     'APPROACHES',
+    'APPROX',
     )
 
 t_LEFT_PAREN = r'\('
@@ -262,7 +272,17 @@ class RLimit(Limit):
 class LLimit(Limit):
     pass
 
+class Approx(namedtuple('_Approx', 'expression')):
+    def free_vars(self):
+        return self.expression.free_vars()
 
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__,
+                self.expression)
+
+    def output(self):
+        return '%s(%s)' % (self.__class__.__name__,
+                self.expression.output())
 
 ###################################################
 # Variables
@@ -412,6 +432,11 @@ def p_limit_approache_at(t):
     '''limit : unboundedlimit WHEN variable APPROACHES expression'''
     t[0] = Limit(t[1].expression, t[3].name, t[5])
 
+###################################################
+# Approximation
+def p_expression_approximation(t):
+    '''expression : APPROX expression'''
+    t[0] = Approx(t[2])
 
 
 

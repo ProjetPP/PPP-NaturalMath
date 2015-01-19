@@ -82,3 +82,6 @@ class ParserTestCase(unittest.TestCase):
         self.assertTranslates('limit of y/x when x approaches 0', 'Limit(y/x, x, 0)')
         self.assertTranslates('right limit of y/x when x approaches 0', 'RLimit(y/x, x, 0)')
         self.assertTranslates('left limit of y/x when x approaches 0', 'LLimit(y/x, x, 0)')
+
+    def testApprox(self):
+        self.assertTranslates('approximate 4/5', 'Approx(4/5)')
