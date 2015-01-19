@@ -243,11 +243,20 @@ def p_expression_variable(t):
 
 ###################################################
 # Misc
+def p_number(t):
+    '''number : NUMBER'''
+    v = t[1]
+    if '.' in v:
+        t[0] = Number(float(v))
+    elif ',' in v:
+        t[0] = Number(float(v.replace(',', '.')))
+    else:
+        t[0] = Number(int(v))
 def p_expression_number(t):
-    '''expression : NUMBER'''
-    t[0] = Number(float(t[1]))
+    '''expression : number'''
+    t[0] = t[1]
 def p_expression_postfix_base(t):
-    '''expression : NUMBER POSTFIX
+    '''expression : number POSTFIX
                   | variable POSTFIX'''
     t[0] = Postfix(t[1], t[2])
 def p_expression_postfix_paren(t):
