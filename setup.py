@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ppp_natural_math',
-    version='0.1.1',
+    version='0.2',
     description='Natural language processing for math questions for the Projet Pensées\nProfondes.',
     url='https://github.com/ProjetPP',
     author='Valentin Lorentz',
