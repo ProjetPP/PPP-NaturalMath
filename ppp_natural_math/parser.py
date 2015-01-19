@@ -3,13 +3,18 @@ from ply import lex, yacc
 
 reserved = {
     'sum': 'SUM',
+    'sums': 'SUM',
     'product': 'PRODUCT',
+    'products': 'PRODUCT',
     'integrate': 'INTEGRATE',
     'integral': 'INTEGRATE',
+    'integrals': 'INTEGRATE',
     'derivate': 'DERIVATE',
     'derivative': 'DERIVATE',
+    'derivatives': 'DERIVATE',
     'differentiate': 'DERIVATE',
     'differential': 'DERIVATE',
+    'differentials': 'DERIVATE',
     'from': 'FROM',
     'to': 'TO',
     'of': 'OF',
