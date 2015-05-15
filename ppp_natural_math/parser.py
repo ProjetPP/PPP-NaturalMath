@@ -329,9 +329,15 @@ def p_fromto(t):
 
 ###################################################
 # Functions
+function_renaming = {
+        'probability': 'P',
+        'proba': 'P',
+        'expectancy': 'E',
+        'expect': 'E',
+        }
 def p_call_begin(t):
     '''call : NAME LEFT_PAREN expression'''
-    t[0] = Call(t[1], [t[3]])
+    t[0] = Call(function_renaming.get(t[1], t[1]), [t[3]])
 def p_call_continue(t):
     '''call : call COMMA expression'''
     t[0] = Call(t[1].function, t[1].arguments + [t[3]])
@@ -340,7 +346,7 @@ def p_call_end(t):
     t[0] = t[1]
 def p_expression_call2(t):
     '''expression : NAME OF expression'''
-    t[0] = Call(t[1], [t[3]])
+    t[0] = Call(function_renaming.get(t[1], t[1]), [t[3]])
 
 ###################################################
 # Sum
