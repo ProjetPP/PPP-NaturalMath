@@ -7,19 +7,19 @@ class TestFollowing(PPPTestCase(app)):
     config_var = 'PPP_NATURALMATH'
     config = ''
     def testBasics(self):
-        q = Request('1', 'en', Resource('x'))
+        q = Request('1', 'en', Resource('x'), {}, [])
         r = self.request(q)
         self.assertEqual(r, [])
 
-        q = Request('1', 'en', Sentence('integral of x^y'))
+        q = Request('1', 'en', Sentence('integral of x^y'), {}, [])
         r = self.request(q)
         self.assertEqual(len(r), 1, r)
         self.assertEqual(r[0].tree, Sentence('Integrate(x^y, y)'))
 
-        q = Request('1', 'en', Sentence('x'))
+        q = Request('1', 'en', Sentence('x'), {}, [])
         r = self.request(q)
         self.assertEqual(r, [])
 
-        q = Request('1', 'en', Sentence('*$$!-|'))
+        q = Request('1', 'en', Sentence('*$$!-|'), {}, [])
         r = self.request(q)
         self.assertEqual(r, [])

@@ -26,6 +26,8 @@ class ParserTestCase(unittest.TestCase):
     def testFunctionCall(self):
         self.assertTranslates('sin of pi', 'sin(pi)')
         self.assertTranslates('f(x,y)', 'f(x, y)')
+        self.assertTranslates('probability of x', 'P(x)')
+        self.assertTranslates('probability(x)', 'P(x)')
     def testIntegrateBase(self):
         self.assertParses('integrate x', Integrate(Variable('x'), 'x'))
         self.assertTranslates('integrate x', 'Integrate(x, x)')
